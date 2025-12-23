@@ -3,48 +3,74 @@ const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
+const winston = require('winston');
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 app.use(helmet());
 
-// Dummy database (for demo)
-const users = [];
+// Logger setup
+const logger = winston.createLogger({
+  level: 'info',
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'security.log' })
+  ]
+});
 
-// Register route
+// Dummy user storage (for lab only)
+let users = [];
+
+// REGISTER ROUTE
 app.post('/register', async (req, res) => {
-    const { email, password } = req.body;
+  logger.info('Register endpoint accessed');
 
-    if (!validator.isEmail(email)) return res.status(400).send('Invalid email');
-    if (!password || password.length < 6) return res.status(400).send('Password too short');
+  const { email, password } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+  // Validate email
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ message: 'Invalid email' });
+  }
 
-    users.push({ email, password: hashedPassword });
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-    res.send({ message: 'User registered securely', hashedPassword });
+  users.push({ email, password: hashedPassword });
+
+  res.json({
+    message: 'User registered securely',
+    hashedPassword: hashedPassword
+  });
 });
 
-// Login route
+// LOGIN ROUTE
 app.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    const user = users.find(u => u.email === email);
+  logger.info('Login attempt made');
 
-    if (!user) return res.status(400).send('User not found');
+  const { email, password } = req.body;
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(400).send('Wrong password');
+  const user = users.find(u => u.email === email);
+  if (!user) {
+    return res.status(400).json({ message: 'User not found' });
+  }
 
-    const token = jwt.sign({ email }, 'your-secret-key', { expiresIn: '1h' });
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).json({ message: 'Wrong password' });
+  }
 
-    res.send({ message: 'Login successful', token });
+  const token = jwt.sign({ email: user.email }, 'secret-key');
+
+  res.json({
+    message: 'Login successful',
+    token: token
+  });
 });
 
-// Test route
-app.get('/', (req, res) => {
-    res.send('Server is running!');
-});
-
+// START SERVER
 app.listen(3000, () => {
-    console.log('Server running on port 3000');
+  logger.info('Application started');
+  console.log('Server running on port 3000');
 });
