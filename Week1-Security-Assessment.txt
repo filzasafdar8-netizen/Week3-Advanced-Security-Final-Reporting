@@ -1,0 +1,158 @@
+
+DevelopersHub 
+Corporation
+
+
+
+
+
+
+Report: Security Assessment
+(WEEK:01)
+Name: FILZA SAFDAR
+
+
+
+
+
+
+
+
+
+
+
+Application Overview
+For security assessment, an intentionally vulnerable web application (testphp.vulnweb.com ) was used. The application provides login, search, and user information features and is designed for cybersecurity testing.
+
+
+2. Vulnerability Assessment
+2.1 Cross‑Site Scripting (XSS)
+A Cross‑Site Scripting (XSS) vulnerability was tested using the search functionality. The following script was entered into the search bar:
+
+
+<script>alert('XSS')</script>
+
+
+Upon submission, a JavaScript alert popup appeared, confirming the presence of an XSS vulnerability. This indicates that user input is not properly sanitized before being rendered on the page.
+
+
+
+
+
+
+
+
+
+
+
+
+2.2 SQL Injection
+A basic SQL Injection test was performed on the login page using the following input:
+Username:
+              admin' OR '1'='1
+
+Password
+              admin' OR '1'='1
+
+                      
+The application responded abnormally and allowed access, indicating that the input was not properly validated and was directly processed by the backend.
+
+
+
+
+
+
+
+
+3. Sensitive Information Exposure
+After successful login, sensitive user information such as name, email address, phone number, and credit card details was displayed on the page. This highlights improper handling and exposure of confidential data.
+
+
+
+
+4. Findings Summary
+ Vulnerabilities Found
+Cross‑Site Scripting (XSS) vulnerability in search input.
+SQL Injection vulnerability in login form.
+Sensitive user information exposed after login.
+Lack of proper input validation and sanitization.
+ Areas of Improvement
+Sanitize and validate all user inputs.
+Implement output encoding to prevent XSS attacks.
+Use parameterized queries to prevent SQL Injection.
+Protect sensitive user data and enforce secure access controls.
+
+5. Conclusion
+The Week 1 security assessment successfully identified critical vulnerabilities including Cross‑Site Scripting (XSS), SQL Injection, and sensitive data exposure. These findings emphasize the importance of secure coding practices and proper security configurations in web applications.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
